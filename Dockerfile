@@ -27,6 +27,12 @@ RUN addgroup -g ${GID} ${USER} && \
 COPY --from=builder --chmod=755 --chown=${UID}:${GID} /app/bin/openlist ./
 COPY --chmod=755 --chown=${UID}:${GID} entrypoint.sh /entrypoint.sh
 
+# ============================================================
+# 关键修改：在切换到非 root 用户之前，修复数据目录权限
+# ============================================================
+RUN chown -R ${UID}:${GID} /opt/openlist/data && \
+    chmod -R 755 /opt/openlist/data
+
 USER ${USER}
 RUN /entrypoint.sh version
 
